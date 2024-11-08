@@ -208,6 +208,8 @@ class PokemonBot:
         if 0 < len(self.hand_state) < 8:
             card_offset_x = card_offset_mapping.get(self.number_of_cards, 20)
             for card in self.hand_state:
+                self.log_callback(f"{card['name']}")
+                self.log_callback(f"{card["info"].get("item_card")}")
                 # Check if the card is a trainer card and play it if possible
                 if card["info"].get("item_card"):
                     start_x = self.card_start_x - (card["position"] * card_offset_x)
@@ -410,7 +412,7 @@ class PokemonBot:
 
                 selected_card_id = selected_card["id"] if selected_card else None
                 self.log_callback(f"✨ Selected Card: {selected_card.get('name', 'Unknown')}")
-                
+
                 # Convert and store selected card data
                 card_info = self.convert_api_card_data(selected_card)
                 self.deck_info[selected_card["id"]] = card_info
@@ -448,7 +450,7 @@ class PokemonBot:
     def click_bench_pokemons(self):
         # Take a screenshot to check for any interrupting UI elements
         screenshot = take_screenshot()
-        
+
         # Check if any blocking element is visible
         if (
             not self.running
@@ -485,7 +487,7 @@ class PokemonBot:
         # Check for active Pokémon in the main zone
         self.check_active_pokemon()
         self.reset_view()
-        
+
         # Logging active Pokémon status
         if self.active_pokemon:
             active = self.active_pokemon[0]
@@ -500,10 +502,10 @@ class PokemonBot:
         for index, bench_position in enumerate(bench_positions):
             zoomed_card_image = self.battle_actions.get_card(bench_position[0], bench_position[1], 1.25)
             bench_zone_pokemon_name = self.battle_actions.identify_card(zoomed_card_image)
-            
+
             if bench_zone_pokemon_name:
                 self.log_callback(f"📍 Bench Slot {index + 1}: **{bench_zone_pokemon_name}**")
-                
+
                 # Add Pokémon to the bench list without extra details
                 card_info = {
                     "name": bench_zone_pokemon_name,
@@ -513,7 +515,7 @@ class PokemonBot:
                 self.bench_pokemon.append(card_info)
             else:
                 self.log_callback(f"📍 Bench Slot {index + 1}: *Empty*")
-            
+
             # Reset view for the next bench position check
             self.reset_view()
             time.sleep(0.25)
@@ -526,21 +528,21 @@ class PokemonBot:
 
     def check_active_pokemon(self):
         self.log_callback("Starting to check active Pokémon in main zone...")
-        
+
         # Dragging to the center and capturing a zoomed card image
         drag_position((500, 1100), (self.center_x, self.center_y))
         self.log_callback("Dragged to main zone position to inspect active Pokémon.")
-        
+
         # Capturing and identifying the card
         zoomed_card_image = self.battle_actions.get_card(self.center_x, self.center_y, 1.25)
         main_zone_pokemon_name = self.battle_actions.identify_card(zoomed_card_image)
-        
+
         if main_zone_pokemon_name:
             self.log_callback(f"Identified Pokémon in main zone: {main_zone_pokemon_name}")
-            
+
             # Initializing the active Pokémon list
             self.active_pokemon = []
-            
+
             # Retrieving Pokémon details from the deck
             card_info = self.deck_info.get(main_zone_pokemon_name, default_pokemon_stats)
             card_info = {
@@ -549,7 +551,7 @@ class PokemonBot:
                 "energies": 0,
             }
             self.active_pokemon.append(card_info)
-            
+
             # Logging detailed active Pokémon info
             self.log_callback(f"Active Pokémon details: {card_info}")
         else:
