@@ -222,7 +222,7 @@ class PokemonBot:
             self.log_callback(f"Hand state:")
             for card in self.hand_state:
                 self.log_callback(f"{card['name']}")
-                self.log_callback(f"{card["info"].get("item_card")}")
+                self.log_callback(f"{card['info'].get('item_card')}")
                 # Check if the card is a trainer card and play it if possible
                 start_x = self.card_start_x - (card["position"] * card_offset_x)
                 self.log_callback(f"Checking card in play turn: {card}")
